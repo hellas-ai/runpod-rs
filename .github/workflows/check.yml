@@ -1,0 +1,30 @@
+name: Checks
+
+on:
+    pull_request:
+
+jobs:
+    nix-matrix-checks:
+        runs-on: ubuntu-latest
+        outputs:
+            matrix: ${{ steps.set-matrix.outputs.matrix }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: cachix/install-nix-action@v24
+            - id: set-matrix
+              name: Generate Nix Matrix
+              run: |
+                  set -Eeu
+                  matrix="$(nix eval --json '.#githubCheckActions.matrix')"
+                  echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+    nix-build:
+        name: ${{ matrix.name }}
+        needs: nix-matrix-checks
+        runs-on: self-hosted
+        strategy:
+            matrix: ${{fromJSON(needs.nix-matrix-checks.outputs.matrix)}}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: cachix/install-nix-action@v24
+            - run: nix build --accept-flake-config -L ".#${{ matrix.attr }}"

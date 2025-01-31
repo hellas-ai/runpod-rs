@@ -1,0 +1,6 @@
+mutation StopPod($input: PodStopInput!) {
+  podStop(input: $input) {
+    id
+    desiredStatus
+  }
+}

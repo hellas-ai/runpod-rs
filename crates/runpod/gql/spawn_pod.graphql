@@ -1,0 +1,11 @@
+mutation SpawnPodOnDemand($input: PodFindAndDeployOnDemandInput!) {
+  podFindAndDeployOnDemand(input: $input) {
+    id
+  }
+}
+
+mutation SpawnPodSpot($input: PodRentInterruptableInput!) {
+  podRentInterruptable(input: $input) {
+    id
+  }
+}

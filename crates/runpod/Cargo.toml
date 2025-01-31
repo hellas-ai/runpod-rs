@@ -1,0 +1,31 @@
+[package]
+name = "runpod"
+version = "0.1.0"
+edition = "2021"
+description = "Rust client library for the Runpod.io API"
+license = "MIT"
+
+[dependencies]
+reqwest = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+serde_path_to_error = "0.1"
+url = { version = "2.5", default-features = false, features = ["serde"] }
+typed-builder = "0.20"
+graphql_client = "0.14"
+dirs = "6.0.0"
+toml = "0.8.19"
+tabled = { workspace = true, optional = true }
+
+[dev-dependencies]
+test-log = { version = "0.2", default-features = false, features = [
+    "trace",
+    "color",
+] }
+
+[features]
+default = []
+tabled = ["dep:tabled"]

@@ -1,0 +1,33 @@
+query GetPod($input: PodFilter!) {
+  pod(input: $input) {
+    id
+    name
+    podType
+    desiredStatus
+    imageName
+    gpuCount
+    vcpuCount
+    memoryInGb
+    volumeInGb
+    containerDiskInGb
+    lowestBidPriceToResume
+    adjustedCostPerHr
+    runtime {
+      uptimeInSeconds
+    }
+    machine {
+      id
+      gpuTypeId
+      location
+      machineSystem {
+        cudaVersion
+        kernelVersion
+      }
+      gpuType {
+        id
+        memoryInGb
+        cudaCores
+      }
+    }
+  }
+}

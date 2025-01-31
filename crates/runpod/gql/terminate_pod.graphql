@@ -1,0 +1,3 @@
+mutation TerminatePod($input: PodTerminateInput!) {
+  podTerminate(input: $input)
+}
