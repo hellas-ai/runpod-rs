@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+// use runpod::types::SaveTemplateInput;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -24,6 +25,12 @@ pub enum Commands {
         #[command(subcommand)]
         command: GpuCommands,
     },
+    /// List all templates
+    Template {
+        /// List all templates
+        #[command(subcommand)]
+        command: TemplateCommands,
+    },
 }
 
 #[derive(Subcommand)]
@@ -34,11 +41,8 @@ pub enum PodCommands {
         id: String,
     },
     /// List all pods
-    List {
-        /// Show all fields
-        #[arg(short, long)]
-        verbose: bool,
-    },
+    List {},
+
     /// Spawn a new pod
     Spawn {
         /// Name for the new pod
@@ -64,6 +68,10 @@ pub enum PodCommands {
         /// Container disk size in GB
         #[arg(long)]
         disk: Option<i64>,
+
+        /// Template ID
+        #[arg(long)]
+        template: String,
     },
     /// Stop a pod
     Stop {
@@ -73,6 +81,76 @@ pub enum PodCommands {
     /// Terminate a pod
     Terminate {
         /// Pod ID to terminate
+        id: String,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum TemplateCommands {
+    /// List all templates
+    List {},
+
+    /// Save or update a template
+    SaveTemplate {
+        /// Template ID (optional for new templates)
+        #[arg(long)]
+        id: Option<String>,
+
+        /// Template name
+        #[arg(long)]
+        name: String,
+
+        /// Docker image name
+        #[arg(long)]
+        image_name: String,
+
+        /// Container disk size in GB
+        #[arg(long)]
+        #[arg(long, default_value = "20")]
+        container_disk_in_gb: i64,
+
+        /// Volume size in GB
+        #[arg(long)]
+        #[arg(long, default_value = "60.0")]
+        volume_in_gb: Option<f64>,
+
+        /// Volume mount path
+        #[arg(long)]
+        volume_mount_path: Option<String>,
+
+        /// Container ports (e.g. "8080/tcp,8081/udp")
+        #[arg(long)]
+        ports: Option<String>,
+
+        /// Environment variables (e.g. "KEY1=value1,KEY2=value2")
+        #[arg(long)]
+        env: Option<String>,
+
+        /// Number of GPUs
+        #[arg(long, default_value = "1")]
+        gpu_count: Option<i64>,
+
+        /// Number of vCPUs
+        #[arg(long, default_value = "4.0")]
+        vcpu_count: Option<f64>,
+
+        /// Memory in GB
+        #[arg(long)]
+        #[arg(long, default_value = "16.0")]
+        memory_in_gb: Option<f64>,
+
+        /// Docker arguments
+        #[arg(long)]
+        docker_args: Option<String>,
+
+        /// Container registry auth ID
+        #[arg(long)]
+        container_registry_auth_id: Option<String>,
+    },
+
+    /// Remove a template
+    RemoveTemplate {
+        /// Template ID
         id: String,
     },
 }

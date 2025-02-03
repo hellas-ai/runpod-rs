@@ -1,1140 +1,1172 @@
 schema {
-  query: Query
-  mutation: Mutation
+    query: Query
+    mutation: Mutation
 }
 
 type Query {
-  cpuTypes: [CpuType]
-  gpuTypes(input: GpuTypeFilter): [GpuType]!
-  myself: User!
-  pod(input: PodFilter): Pod
+    cpuTypes: [CpuType]
+    gpuTypes(input: GpuTypeFilter): [GpuType]!
+    myself: User!
+    pod(input: PodFilter): Pod
 }
 
 type Mutation {
-  podBidResume(input: PodBidResumeInput!): Pod
-  podEditJob(input: PodEditJobInput!): Pod
-  podFindAndDeployOnDemand(input: PodFindAndDeployOnDemandInput): Pod
-  podRentInterruptable(input: PodRentInterruptableInput!): Pod
-  podResume(input: PodResumeInput!): Pod
-  podStop(input: PodStopInput!): Pod!
-  podTerminate(input: PodTerminateInput!): Void
-  saveRegistryAuth(input: SaveRegistryAuthInput): ContainerRegistryAuth
+    podBidResume(input: PodBidResumeInput!): Pod
+    podEditJob(input: PodEditJobInput!): Pod
+    podFindAndDeployOnDemand(input: PodFindAndDeployOnDemandInput): Pod
+    podRentInterruptable(input: PodRentInterruptableInput!): Pod
+    podResume(input: PodResumeInput!): Pod
+    podStop(input: PodStopInput!): Pod!
+    podTerminate(input: PodTerminateInput!): Void
+    saveTemplate(input: PodTemplateInput!): Pod
+    saveRegistryAuth(input: SaveRegistryAuthInput): ContainerRegistryAuth
+    # saveTemplate(input PodTemplate): PodTemplate
 }
 
 type ApiKey {
-  id: String
-  permissions: String!
-  createdAt: DateTime!
-  lastUsed: DateTime
-  name: String
+    id: String
+    permissions: String!
+    createdAt: DateTime!
+    lastUsed: DateTime
+    name: String
 }
 
 type AuditLog {
-  actorId: String
-  email: String
-  ownerId: String
-  resourceType: String
-  resourceId: String
-  action: String
-  value: String
-  timestamp: DateTime
+    actorId: String
+    email: String
+    ownerId: String
+    resourceType: String
+    resourceId: String
+    action: String
+    value: String
+    timestamp: DateTime
 }
 
 type AuditLogConnection {
-  edges: [AuditLog]
-  pageInfo: PageInfo
+    edges: [AuditLog]
+    pageInfo: PageInfo
 }
 
 type BenchmarkPod {
-  id: String
-  desiredStatus: String
+    id: String
+    desiredStatus: String
 }
 
 enum BillingGranularity {
-  HOURLY
-  DAILY
-  WEEKLY
-  MONTHLY
+    HOURLY
+    DAILY
+    WEEKLY
+    MONTHLY
 }
 
 type ClientCreditCharge {
-  amount: Float
-  updatedAt: DateTime
-  diskCharges: Float
-  podCharges: Float
-  apiCharges: Float
-  serverlessCharges: Float
-  type: ClientCreditChargeType
+    amount: Float
+    updatedAt: DateTime
+    diskCharges: Float
+    podCharges: Float
+    apiCharges: Float
+    serverlessCharges: Float
+    type: ClientCreditChargeType
 }
 
 enum ClientCreditChargeType {
-  CHARGE_SERVERLESS
-  CHARGE_POD
-  CHARGE_API
-  CHARGE_STORAGE
-  CHARGE_SAVINGS_PLAN
+    CHARGE_SERVERLESS
+    CHARGE_POD
+    CHARGE_API
+    CHARGE_STORAGE
+    CHARGE_SAVINGS_PLAN
 }
 
 enum CloudTypeEnum {
-  SECURE
-  COMMUNITY
-  ALL
+    SECURE
+    COMMUNITY
+    ALL
 }
 
 enum Compliance {
-  GDPR
-  ISO_IEC_27001
-  ISO_14001
-  PCI_DSS
-  HITRUST
-  SOC_1_TYPE_2
-  SOC_2_TYPE_2
-  SOC_3_TYPE_2
-  ITAR
-  FISMA_HIGH
+    GDPR
+    ISO_IEC_27001
+    ISO_14001
+    PCI_DSS
+    HITRUST
+    SOC_1_TYPE_2
+    SOC_2_TYPE_2
+    SOC_3_TYPE_2
+    ITAR
+    FISMA_HIGH
 }
 
 enum ComputeType {
-  CPU
-  GPU
+    CPU
+    GPU
 }
 
 type ContainerRegistryAuth {
-  id: String
-  name: String
-  userId: String
-  registryAuth: String
+    id: String
+    name: String
+    userId: String
+    registryAuth: String
 }
 
 type CpuFlavor {
-  id: String
-  groupId: String
-  groupName: String
-  displayName: String
-  minVcpu: Float
-  maxVcpu: Int
-  vcpuBurstable: Boolean
-  ramMultiplier: Float
-  diskLimitPerVcpu: Int
-  specifics(input: SpecificsInput): Specifics
+    id: String
+    groupId: String
+    groupName: String
+    displayName: String
+    minVcpu: Float
+    maxVcpu: Int
+    vcpuBurstable: Boolean
+    ramMultiplier: Float
+    diskLimitPerVcpu: Int
+    specifics(input: SpecificsInput): Specifics
 }
 
 type CpuType {
-  id: String
-  displayName: String
-  manufacturer: String
-  cores: Int
-  threadsPerCore: Int
-  groupId: String
+    id: String
+    displayName: String
+    manufacturer: String
+    cores: Int
+    threadsPerCore: Int
+    groupId: String
 }
 
 type CreditCode {
-  id: String
-  issuerId: String
-  createdAt: DateTime
-  redeemedAt: DateTime
-  amount: Int
+    id: String
+    issuerId: String
+    createdAt: DateTime
+    redeemedAt: DateTime
+    amount: Int
 }
 
 enum CsrRole {
-  admin
-  support_write
-  support_read
+    admin
+    support_write
+    support_read
 }
 
 type DataCenter {
-  id: String
-  name: String
-  location: String
-  storage: DataCenterStorage
-  storageSupport: Boolean
-  listed: Boolean
-  gpuAvailability(input: GpuAvailabilityInput): [GpuAvailability]
-  compliance: [Compliance]
+    id: String
+    name: String
+    location: String
+    storage: DataCenterStorage
+    storageSupport: Boolean
+    listed: Boolean
+    gpuAvailability(input: GpuAvailabilityInput): [GpuAvailability]
+    compliance: [Compliance]
 }
 
 type DataCenterStorage {
-  hostname: String
-  ips: [String]
-  pw: String
-  type: String
-  user: String
-  list: [DataCenterStorageList]
+    hostname: String
+    ips: [String]
+    pw: String
+    type: String
+    user: String
+    list: [DataCenterStorageList]
 }
 
 type DataCenterStorageList {
-  mnt: String
-  pw: String
-  servers: [String]
-  type: String
-  versions: [Int]
-  primary: Boolean
+    mnt: String
+    pw: String
+    servers: [String]
+    type: String
+    versions: [Int]
+    primary: Boolean
 }
 
 scalar Date
 scalar DateTime
 
 type Discount {
-  userId: String!
-  type: DiscountType!
-  discountFactor: Float!
-  expirationDate: DateTime!
-  activeDiscountFactor: Float
-  activeWorkers: Int
+    userId: String!
+    type: DiscountType!
+    discountFactor: Float!
+    expirationDate: DateTime!
+    activeDiscountFactor: Float
+    activeWorkers: Int
 }
 
 enum DiscountType {
-  SERVERLESS
+    SERVERLESS
 }
 
 input EarningsCustomRangeInput {
-  startDate: Date!
-  endDate: Date!
+    startDate: Date!
+    endDate: Date!
 }
 
 type Endpoint {
-  aiKey: String
-  gpuIds: String
-  id: String
-  idleTimeout: Int
-  name: String
-  networkVolumeId: String
-  locations: String
-  pods: [Pod]
-  scalerType: String
-  scalerValue: Int
-  template: PodTemplate
-  templateId: String
-  type: String
-  userId: String
-  version: Int
-  workersMax: Int
-  workersMin: Int
-  workersStandby: Int
-  gpuCount: Int
-  env: [EnvironmentVariable]
-  createdAt: DateTime
-  allowedCudaVersions: String
-  executionTimeoutMs: Int
-  instanceIds: [String]
-  computeType: ComputeType
-  workerState(input: WorkerStateInput!): [WorkerState]
-  webhookRequests(input: WebhookRequestsInput!): [WebhookRequestStatus]
-  networkVolume: NetworkVolume
+    aiKey: String
+    gpuIds: String
+    id: String
+    idleTimeout: Int
+    name: String
+    networkVolumeId: String
+    locations: String
+    pods: [Pod]
+    scalerType: String
+    scalerValue: Int
+    template: PodTemplate
+    templateId: String
+    type: String
+    userId: String
+    version: Int
+    workersMax: Int
+    workersMin: Int
+    workersStandby: Int
+    gpuCount: Int
+    env: [EnvironmentVariable]
+    createdAt: DateTime
+    allowedCudaVersions: String
+    executionTimeoutMs: Int
+    instanceIds: [String]
+    computeType: ComputeType
+    workerState(input: WorkerStateInput!): [WorkerState]
+    webhookRequests(input: WebhookRequestsInput!): [WebhookRequestStatus]
+    networkVolume: NetworkVolume
 }
 
 enum EndpointStatisticGranularity {
-  LIVE
-  HOURLY
-  DAILY
-  WEEKLY
-  MONTHLY
+    LIVE
+    HOURLY
+    DAILY
+    WEEKLY
+    MONTHLY
 }
 
 type EnvironmentVariable {
-  key: String
-  value: String
+    key: String
+    value: String
 }
 
 input EnvironmentVariableInput {
-  key: String!
-  value: String!
+    key: String!
+    value: String!
 }
 
 type Gpu {
-  id: String!
-  podId: String
+    id: String!
+    podId: String
 }
 
 type GpuAvailability {
-  available: Boolean
-  stockStatus: String
-  gpuTypeId: String!
-  gpuType: GpuType
-  gpuTypeDisplayName: String
-  displayName: String
-  id: String
+    available: Boolean
+    stockStatus: String
+    gpuTypeId: String!
+    gpuType: GpuType
+    gpuTypeDisplayName: String
+    displayName: String
+    id: String
 }
 
 input GpuAvailabilityInput {
-  gpuCount: Int
-  minDisk: Int
-  minMemoryInGb: Int
-  minVcpuCount: Int
-  secureCloud: Boolean
-  allowedCudaVersions: [String]
-  includeAiApi: Boolean
+    gpuCount: Int
+    minDisk: Int
+    minMemoryInGb: Int
+    minVcpuCount: Int
+    secureCloud: Boolean
+    allowedCudaVersions: [String]
+    includeAiApi: Boolean
 }
 
 input GpuLowestPriceInput {
-  countryCode: String
-  dataCenterId: String
-  gpuCount: Int!
-  includeAiApi: Boolean
-  minDisk: Int
-  minDownload: Int
-  minMemoryInGb: Int
-  minUpload: Int
-  minVcpuCount: Int
-  secureCloud: Boolean
-  supportPublicIp: Boolean
-  totalDisk: Int
-  cudaVersion: String
-  allowedCudaVersions: [String]
-  compliance: [Compliance]
+    countryCode: String
+    dataCenterId: String
+    gpuCount: Int!
+    includeAiApi: Boolean
+    minDisk: Int
+    minDownload: Int
+    minMemoryInGb: Int
+    minUpload: Int
+    minVcpuCount: Int
+    secureCloud: Boolean
+    supportPublicIp: Boolean
+    totalDisk: Int
+    cudaVersion: String
+    allowedCudaVersions: [String]
+    compliance: [Compliance]
 }
 
 type GpuTelemetry {
-  id: String
-  percentUtilization: Float
-  temperatureCelcius: Float
-  memoryUtilization: Float
-  powerWatts: Float
+    id: String
+    percentUtilization: Float
+    temperatureCelcius: Float
+    memoryUtilization: Float
+    powerWatts: Float
 }
 
 type GpuType {
-  lowestPrice: LowestPrice
-  maxGpuCount: Int
-  maxGpuCountCommunityCloud: Int
-  maxGpuCountSecureCloud: Int
-  minPodGpuCount: Int
-  id: String!
-  displayName: String
-  manufacturer: String
-  memoryInGb: Int
-  cudaCores: Int
-  secureCloud: Boolean
-  communityCloud: Boolean
-  securePrice: Float
-  communityPrice: Float
-  oneMonthPrice: Float
-  threeMonthPrice: Float
-  sixMonthPrice: Float
-  oneWeekPrice: Float
-  communitySpotPrice: Float
-  secureSpotPrice: Float
+    lowestPrice: LowestPrice
+    maxGpuCount: Int
+    maxGpuCountCommunityCloud: Int
+    maxGpuCountSecureCloud: Int
+    minPodGpuCount: Int
+    id: String!
+    displayName: String
+    manufacturer: String
+    memoryInGb: Int
+    cudaCores: Int
+    secureCloud: Boolean
+    communityCloud: Boolean
+    securePrice: Float
+    communityPrice: Float
+    oneMonthPrice: Float
+    threeMonthPrice: Float
+    sixMonthPrice: Float
+    oneWeekPrice: Float
+    communitySpotPrice: Float
+    secureSpotPrice: Float
 }
 
 input GpuTypeFilter {
-  id: String
-  ids: [String!]
+    id: String
+    ids: [String!]
 }
 
 type Impersonation {
-  auditLogs: AuditLogConnection
-  id: ID!
-  zendeskTicketId: ID!
-  impersonateUserId: String!
-  createdAt: DateTime!
-  expiresAt: DateTime!
-  accepted: Boolean!
-  acceptedAt: DateTime
+    auditLogs: AuditLogConnection
+    id: ID!
+    zendeskTicketId: ID!
+    impersonateUserId: String!
+    createdAt: DateTime!
+    expiresAt: DateTime!
+    accepted: Boolean!
+    acceptedAt: DateTime
 }
 
 scalar JSON
 
 type LowestPrice {
-  gpuName: String
-  gpuTypeId: String
-  minimumBidPrice: Float
-  uninterruptablePrice: Float
-  minMemory: Int
-  minVcpu: Int
-  rentalPercentage: Float
-  rentedCount: Int
-  totalCount: Int
-  stockStatus: String
-  minDownload: Int
-  minDisk: Int
-  minUpload: Int
-  countryCode: String
-  supportPublicIp: Boolean
-  compliance: [Compliance]
+    gpuName: String
+    gpuTypeId: String
+    minimumBidPrice: Float
+    uninterruptablePrice: Float
+    minMemory: Int
+    minVcpu: Int
+    rentalPercentage: Float
+    rentedCount: Int
+    totalCount: Int
+    stockStatus: String
+    minDownload: Int
+    minDisk: Int
+    minUpload: Int
+    countryCode: String
+    supportPublicIp: Boolean
+    compliance: [Compliance]
 }
 
 type Machine {
-  pods: [Pod]
-  id: String
-  userId: String
-  name: String
-  registered: Boolean
-  aiApiOnly: Boolean
-  priority: Int
-  minPodGpuCount: Int
-  gpuTypeId: String
-  gpuType: GpuType
-  gpuPowerLimitPercentageRented: Int
-  gpuPowerLimitPercentageSelf: Int
-  cpuCount: Int
-  cpuTypeId: String
-  cpuType: CpuType
-  dataCenter: DataCenter
-  moboName: String
-  hidden: Boolean
-  hostPricePerGpu: Float
-  hostMinBidPerGpu: Float
-  defaultImageName: String
-  defaultStartScript: String
-  defaultArguments: String
-  defaultDiskInGb: Int
-  defaultPort: Port
-  defaultEnv: [String]
-  location: String
-  listed: Boolean
-  verified: Boolean
-  machineId: String
-  diskReserved: Int
-  diskTotal: Int
-  diskMBps: Int
-  downloadMbps: Int
-  gpuReserved: Int
-  gpuTotal: Int
-  pcieLink: Int
-  pcieLinkWidth: Int
-  memoryReserved: Int
-  memoryTotal: Int
-  uploadMbps: Int
-  vcpuReserved: Int
-  vcpuTotal: Int
-  installCert: String
-  uptimePercentListedOneWeek: Float
-  uptimePercentListedFourWeek: Float
-  uptimePercentListedTwelveWeek: Float
-  uptimePercentAbsoluteTwelveWeek: Float
-  margin: Float
-  gpuCloudPrice: Float
-  supportPublicIp: Boolean
-  secureCloud: Boolean
-  ownedByMe: Boolean
-  idleJobTemplateId: String
-  idleJobTemplate: PodTemplate
-  maintenanceStart: DateTime
-  maintenanceEnd: DateTime
-  maintenanceNote: String
-  maintenanceMode: Boolean
-  note: String
-  machineBalance: MachineBalance
-  machineSystem: MachineSystem
-  dataCenterId: String
-  machineType: String
-  lastBenchmark: MachineBenchmark
-  upcomingMaintenances: [MachineMaintenance]
-  nextMaintenance: MachineMaintenance
-  backgroundPodTelemetry(input: backgroundPodTelemetryInput): PodTelemetry
-  latestTelemetry: MachineTelemetry
-  uptime: MachineUptime
-  runpodIp: String
-  publicIp: String
+    pods: [Pod]
+    id: String
+    userId: String
+    name: String
+    registered: Boolean
+    aiApiOnly: Boolean
+    priority: Int
+    minPodGpuCount: Int
+    gpuTypeId: String
+    gpuType: GpuType
+    gpuPowerLimitPercentageRented: Int
+    gpuPowerLimitPercentageSelf: Int
+    cpuCount: Int
+    cpuTypeId: String
+    cpuType: CpuType
+    dataCenter: DataCenter
+    moboName: String
+    hidden: Boolean
+    hostPricePerGpu: Float
+    hostMinBidPerGpu: Float
+    defaultImageName: String
+    defaultStartScript: String
+    defaultArguments: String
+    defaultDiskInGb: Int
+    defaultPort: Port
+    defaultEnv: [String]
+    location: String
+    listed: Boolean
+    verified: Boolean
+    machineId: String
+    diskReserved: Int
+    diskTotal: Int
+    diskMBps: Int
+    downloadMbps: Int
+    gpuReserved: Int
+    gpuTotal: Int
+    pcieLink: Int
+    pcieLinkWidth: Int
+    memoryReserved: Int
+    memoryTotal: Int
+    uploadMbps: Int
+    vcpuReserved: Int
+    vcpuTotal: Int
+    installCert: String
+    uptimePercentListedOneWeek: Float
+    uptimePercentListedFourWeek: Float
+    uptimePercentListedTwelveWeek: Float
+    uptimePercentAbsoluteTwelveWeek: Float
+    margin: Float
+    gpuCloudPrice: Float
+    supportPublicIp: Boolean
+    secureCloud: Boolean
+    ownedByMe: Boolean
+    idleJobTemplateId: String
+    idleJobTemplate: PodTemplate
+    maintenanceStart: DateTime
+    maintenanceEnd: DateTime
+    maintenanceNote: String
+    maintenanceMode: Boolean
+    note: String
+    machineBalance: MachineBalance
+    machineSystem: MachineSystem
+    dataCenterId: String
+    machineType: String
+    lastBenchmark: MachineBenchmark
+    upcomingMaintenances: [MachineMaintenance]
+    nextMaintenance: MachineMaintenance
+    backgroundPodTelemetry(input: backgroundPodTelemetryInput): PodTelemetry
+    latestTelemetry: MachineTelemetry
+    uptime: MachineUptime
+    runpodIp: String
+    publicIp: String
 }
 
 type MachineBalance {
-  hostDiskEarnings: Float
-  hostGpuEarnings: Float
-  hostTotalEarnings: Float
+    hostDiskEarnings: Float
+    hostGpuEarnings: Float
+    hostTotalEarnings: Float
 }
 
 type MachineBenchmark {
-  errors: String
-  benchmarkedAt: DateTime
-  gpuCount: Int
-  pod: BenchmarkPod
+    errors: String
+    benchmarkedAt: DateTime
+    gpuCount: Int
+    pod: BenchmarkPod
 }
 
 type MachineEarning {
-  name: String
-  date: DateTime
-  machineId: String
-  hostTotalEarnings: Float
-  hostGpuEarnings: Float
-  hostDiskEarnings: Float
+    name: String
+    date: DateTime
+    machineId: String
+    hostTotalEarnings: Float
+    hostGpuEarnings: Float
+    hostDiskEarnings: Float
 }
 
 type MachineMaintenance {
-  id: String
-  machineId: String
-  maintenanceStart: DateTime
-  maintenanceEnd: DateTime
-  maintenanceNote: String
+    id: String
+    machineId: String
+    maintenanceStart: DateTime
+    maintenanceEnd: DateTime
+    maintenanceNote: String
 }
 
 type MachineSummary {
-  cpuTypeId: String
-  diskProfitPerHr: Float
-  displayName: String
-  gpuTotal: Int
-  gpuTypeId: String
-  id: String
-  listed: Int
-  machineType: String
-  onDemandPods: Int
-  podProfitPerHr: Float
-  spotPods: Int
-  gpuRented: Int
-  cpuRented: Int
-  vcpuTotal: Int
+    cpuTypeId: String
+    diskProfitPerHr: Float
+    displayName: String
+    gpuTotal: Int
+    gpuTypeId: String
+    id: String
+    listed: Int
+    machineType: String
+    onDemandPods: Int
+    podProfitPerHr: Float
+    spotPods: Int
+    gpuRented: Int
+    cpuRented: Int
+    vcpuTotal: Int
 }
 
 type MachineSystem {
-  os: String
-  cudaVersion: String!
-  diskTotal: Int
-  diskFree: Int
-  dockerVersion: String
-  kernelVersion: String!
+    os: String
+    cudaVersion: String!
+    diskTotal: Int
+    diskFree: Int
+    dockerVersion: String
+    kernelVersion: String!
 }
 
 type MachineTelemetry {
-  time: DateTime
-  cpuUtilization: Float
-  memoryUtilization: Float
-  averageGpuMetrics: GpuTelemetry
-  individualGpuMetrics: [GpuTelemetry]
+    time: DateTime
+    cpuUtilization: Float
+    memoryUtilization: Float
+    averageGpuMetrics: GpuTelemetry
+    individualGpuMetrics: [GpuTelemetry]
 }
 
 type MachineUptime {
-  error: String
-  lastSyncTimestamp: Int
-  seconds: Int
-  sysUptimeSeconds: Int
+    error: String
+    lastSyncTimestamp: Int
+    seconds: Int
+    sysUptimeSeconds: Int
 }
 
 type NetworkStorageEarning {
-  date: DateTime
-  dailyNetworkVolumeEarn: Float
-  dataCenterId: String
-  runpodEarnings: Float
+    date: DateTime
+    dailyNetworkVolumeEarn: Float
+    dataCenterId: String
+    runpodEarnings: Float
 }
 
 input NetworkStorageEarningInput {
-  granularity: String
+    granularity: String
 }
 
 type NetworkVolume {
-  id: String
-  name: String
-  size: Int
-  dataCenterId: String
-  dataCenter: DataCenter
+    id: String
+    name: String
+    size: Int
+    dataCenterId: String
+    dataCenter: DataCenter
 }
 
 type PageInfo {
-  endCursor: DateTime
-  hasNextPage: Boolean
+    endCursor: DateTime
+    hasNextPage: Boolean
 }
 
 type Pod {
-  lowestBidPriceToResume: Float
-  aiApiId: String
-  apiKey: String
-  consumerUserId: String
-  containerDiskInGb: Int!
-  containerRegistryAuthId: String
-  costMultiplier: Float
-  costPerHr: Float!
-  createdAt: DateTime!
-  adjustedCostPerHr: Float!
-  desiredStatus: PodStatus!
-  dockerArgs: String
-  dockerId: String
-  env: [String]
-  gpuCount: Int!
-  gpuPowerLimitPercent: Int!
-  gpus: [Gpu]!
-  id: String!
-  imageName: String!
-  lastStatusChange: String
-  locked: Boolean
-  machineId: String!
-  memoryInGb: Float!
-  name: String!
-  podType: PodType
-  port: Port
-  ports: String
-  registry: PodRegistry
-  templateId: String
-  uptimeSeconds: Int
-  vcpuCount: Float!
-  version: Int
-  volumeEncrypted: Boolean!
-  volumeInGb: Float
-  volumeKey: String
-  volumeMountPath: String
-  lastStartedAt: DateTime!
-  cpuFlavorId: String
-  machineType: String
-  slsVersion: Int
-  networkVolumeId: String
-  cpuFlavor: CpuFlavor
-  runtime: PodRuntime
-  machine: PodMachineInfo!
-  latestTelemetry: PodTelemetry
-  endpoint: Endpoint
-  networkVolume: NetworkVolume
-  savingsPlans: [SavingsPlan]
+    lowestBidPriceToResume: Float
+    aiApiId: String
+    apiKey: String
+    consumerUserId: String
+    containerDiskInGb: Int!
+    containerRegistryAuthId: String
+    costMultiplier: Float
+    costPerHr: Float!
+    createdAt: DateTime!
+    adjustedCostPerHr: Float!
+    desiredStatus: PodStatus!
+    dockerArgs: String
+    dockerId: String
+    env: [String]
+    gpuCount: Int!
+    gpuPowerLimitPercent: Int!
+    gpus: [Gpu]!
+    id: String!
+    imageName: String!
+    lastStatusChange: String
+    locked: Boolean
+    machineId: String!
+    memoryInGb: Float!
+    name: String!
+    podType: PodType
+    port: Port
+    ports: String
+    registry: PodRegistry
+    templateId: String
+    uptimeSeconds: Int
+    vcpuCount: Float!
+    version: Int
+    volumeEncrypted: Boolean!
+    volumeInGb: Float
+    volumeKey: String
+    volumeMountPath: String
+    lastStartedAt: DateTime!
+    cpuFlavorId: String
+    machineType: String
+    slsVersion: Int
+    networkVolumeId: String
+    cpuFlavor: CpuFlavor
+    runtime: PodRuntime
+    machine: PodMachineInfo!
+    latestTelemetry: PodTelemetry
+    endpoint: Endpoint
+    networkVolume: NetworkVolume
+    savingsPlans: [SavingsPlan]
 }
 
 input PodBidResumeInput {
-  podId: String!
-  gpuCount: Int!
-  bidPerGpu: Float!
+    podId: String!
+    gpuCount: Int!
+    bidPerGpu: Float!
 }
 
 input PodEditJobInput {
-  podId: String!
-  dockerArgs: String
-  imageName: String!
-  env: [EnvironmentVariableInput]
-  port: Port
-  ports: String
-  containerDiskInGb: Int!
-  volumeInGb: Int
-  volumeMountPath: String
-  containerRegistryAuthId: String
+    podId: String!
+    dockerArgs: String
+    imageName: String!
+    env: [EnvironmentVariableInput]
+    port: Port
+    ports: String
+    containerDiskInGb: Int!
+    volumeInGb: Int
+    volumeMountPath: String
+    containerRegistryAuthId: String
 }
 
 input PodFilter {
-  podId: String!
+    podId: String!
 }
 
 input PodFindAndDeployOnDemandInput {
-  aiApiId: String
-  cloudType: CloudTypeEnum
-  containerDiskInGb: Int
-  countryCode: String
-  deployCost: Float
-  dockerArgs: String
-  env: [EnvironmentVariableInput]
-  gpuCount: Int
-  gpuTypeId: String
-  gpuTypeIdList: [String]
-  imageName: String
-  minDisk: Int
-  minDownload: Int
-  minMemoryInGb: Int
-  minUpload: Int
-  minVcpuCount: Int
-  name: String
-  networkVolumeId: String
-  port: Port
-  ports: String
-  startJupyter: Boolean
-  startSsh: Boolean
-  stopAfter: DateTime
-  supportPublicIp: Boolean
-  templateId: String
-  terminateAfter: DateTime
-  volumeInGb: Int
-  volumeKey: String
-  volumeMountPath: String
-  dataCenterId: String
-  savingsPlan: SavingsPlanInput
-  cudaVersion: String
-  allowedCudaVersions: [String]
-  instanceIds: [String]
-  computeType: ComputeType
+    aiApiId: String
+    cloudType: CloudTypeEnum
+    containerDiskInGb: Int
+    countryCode: String
+    deployCost: Float
+    dockerArgs: String
+    env: [EnvironmentVariableInput]
+    gpuCount: Int
+    gpuTypeId: String
+    gpuTypeIdList: [String]
+    imageName: String
+    minDisk: Int
+    minDownload: Int
+    minMemoryInGb: Int
+    minUpload: Int
+    minVcpuCount: Int
+    name: String
+    networkVolumeId: String
+    port: Port
+    ports: String
+    startJupyter: Boolean
+    startSsh: Boolean
+    stopAfter: DateTime
+    supportPublicIp: Boolean
+    templateId: String
+    terminateAfter: DateTime
+    volumeInGb: Int
+    volumeKey: String
+    volumeMountPath: String
+    dataCenterId: String
+    savingsPlan: SavingsPlanInput
+    cudaVersion: String
+    allowedCudaVersions: [String]
+    instanceIds: [String]
+    computeType: ComputeType
 }
 
 type PodMachineInfo {
-  id: String!
-  costPerHr: Float
-  currentPricePerGpu: Float
-  diskMBps: Int
-  gpuAvailable: Int
-  gpuDisplayName: String
-  gpuTypeId: String!
-  gpuType: GpuType
-  listed: Boolean
-  location: String!
-  machineType: String
-  maintenanceEnd: DateTime
-  maintenanceNote: String
-  maintenanceStart: DateTime
-  maxDownloadSpeedMbps: Int
-  maxUploadSpeedMbps: Int
-  note: String
-  podHostId: String
-  runpodIp: String
-  secureCloud: Boolean
-  supportPublicIp: Boolean
-  minPodGpuCount: Int
-  machineSystem: MachineSystem!
-  dataCenterId: String
-  cpuTypeId: String
-  cpuType: CpuType
-  cpuCount: Int
-  vcpuTotal: Int
-  vcpuReserved: Float
-  memoryTotal: Int
-  memoryReserved: Float
+    id: String!
+    costPerHr: Float
+    currentPricePerGpu: Float
+    diskMBps: Int
+    gpuAvailable: Int
+    gpuDisplayName: String
+    gpuTypeId: String!
+    gpuType: GpuType
+    listed: Boolean
+    location: String!
+    machineType: String
+    maintenanceEnd: DateTime
+    maintenanceNote: String
+    maintenanceStart: DateTime
+    maxDownloadSpeedMbps: Int
+    maxUploadSpeedMbps: Int
+    note: String
+    podHostId: String
+    runpodIp: String
+    secureCloud: Boolean
+    supportPublicIp: Boolean
+    minPodGpuCount: Int
+    machineSystem: MachineSystem!
+    dataCenterId: String
+    cpuTypeId: String
+    cpuType: CpuType
+    cpuCount: Int
+    vcpuTotal: Int
+    vcpuReserved: Float
+    memoryTotal: Int
+    memoryReserved: Float
 }
 
 type PodRegistry {
-  auth: String
-  pass: String
-  url: String
-  user: String
-  username: String
+    auth: String
+    pass: String
+    url: String
+    user: String
+    username: String
 }
 
 input PodRentInterruptableInput {
-  bidPerGpu: Float
-  cloudType: CloudTypeEnum
-  containerDiskInGb: Int
-  countryCode: String
-  dockerArgs: String
-  env: [EnvironmentVariableInput]
-  gpuCount: Int
-  gpuTypeId: String
-  imageName: String
-  minDisk: Int
-  minDownload: Int
-  minMemoryInGb: Int
-  minUpload: Int
-  minVcpuCount: Int
-  name: String
-  networkVolumeId: String
-  port: Port
-  ports: String
-  startJupyter: Boolean
-  startSsh: Boolean
-  stopAfter: String
-  supportPublicIp: Boolean
-  templateId: String
-  terminateAfter: String
-  volumeInGb: Int
-  volumeKey: String
-  volumeMountPath: String
-  dataCenterId: String
-  cudaVersion: String
-  allowedCudaVersions: [String]
+    bidPerGpu: Float
+    cloudType: CloudTypeEnum
+    containerDiskInGb: Int
+    countryCode: String
+    dockerArgs: String
+    env: [EnvironmentVariableInput]
+    gpuCount: Int
+    gpuTypeId: String
+    imageName: String
+    minDisk: Int
+    minDownload: Int
+    minMemoryInGb: Int
+    minUpload: Int
+    minVcpuCount: Int
+    name: String
+    networkVolumeId: String
+    port: Port
+    ports: String
+    startJupyter: Boolean
+    startSsh: Boolean
+    stopAfter: String
+    supportPublicIp: Boolean
+    templateId: String!
+    terminateAfter: String
+    volumeInGb: Int
+    volumeKey: String
+    volumeMountPath: String
+    dataCenterId: String
+    cudaVersion: String
+    allowedCudaVersions: [String]
 }
 
 input PodResumeInput {
-  podId: String!
-  gpuCount: Int
-  syncMachine: Boolean
-  computeType: ComputeType
+    podId: String!
+    gpuCount: Int
+    syncMachine: Boolean
+    computeType: ComputeType
 }
 
 type PodRuntime {
-  container: PodRuntimeContainer
-  gpus: [PodRuntimeGpus]
-  ports: [PodRuntimePorts]
-  uptimeInSeconds: Int
+    container: PodRuntimeContainer
+    gpus: [PodRuntimeGpus]
+    ports: [PodRuntimePorts]
+    uptimeInSeconds: Int
 }
 
 type PodRuntimeContainer {
-  cpuPercent: Int
-  memoryPercent: Int
+    cpuPercent: Int
+    memoryPercent: Int
 }
 
 type PodRuntimeGpus {
-  id: String
-  gpuUtilPercent: Int
-  memoryUtilPercent: Int
+    id: String
+    gpuUtilPercent: Int
+    memoryUtilPercent: Int
 }
 
 type PodRuntimePorts {
-  ip: String
-  isIpPublic: Boolean
-  privatePort: Int
-  publicPort: Int
-  type: String
+    ip: String
+    isIpPublic: Boolean
+    privatePort: Int
+    publicPort: Int
+    type: String
 }
 
 enum PodStatus {
-  CREATED
-  RUNNING
-  RESTARTING
-  EXITED
-  PAUSED
-  DEAD
-  TERMINATED
+    CREATED
+    RUNNING
+    RESTARTING
+    EXITED
+    PAUSED
+    DEAD
+    TERMINATED
 }
 
 input PodStopInput {
-  podId: String!
-  incrementVersion: Boolean
+    podId: String!
+    incrementVersion: Boolean
 }
 
 type PodTelemetry {
-  state: String
-  time: DateTime
-  cpuUtilization: Float
-  memoryUtilization: Float
-  averageGpuMetrics: GpuTelemetry
-  individualGpuMetrics: [GpuTelemetry]
-  lastStateTransitionTimestamp: Int
+    state: String
+    time: DateTime
+    cpuUtilization: Float
+    memoryUtilization: Float
+    averageGpuMetrics: GpuTelemetry
+    individualGpuMetrics: [GpuTelemetry]
+    lastStateTransitionTimestamp: Int
 }
 
 type PodTemplate {
-  advancedStart: Boolean
-  containerDiskInGb: Int
-  containerRegistryAuthId: String
-  dockerArgs: String
-  earned: Float
-  env: [EnvironmentVariable]
-  id: String
-  imageName: String
-  isPublic: Boolean
-  isRunpod: Boolean
-  isServerless: Boolean
-  boundEndpointId: String
-  name: String
-  ports: String
-  readme: String
-  runtimeInMin: Int
-  startJupyter: Boolean
-  startScript: String
-  startSsh: Boolean
-  volumeInGb: Int
-  volumeMountPath: String
-  config: JSON
-  category: String
+    advancedStart: Boolean
+    containerDiskInGb: Int
+    containerRegistryAuthId: String
+    dockerArgs: String
+    earned: Float
+    env: [EnvironmentVariable]
+    id: String
+    imageName: String
+    isPublic: Boolean
+    isRunpod: Boolean
+    isServerless: Boolean
+    boundEndpointId: String
+    name: String
+    ports: String
+    readme: String
+    runtimeInMin: Int
+    startJupyter: Boolean
+    startScript: String
+    startSsh: Boolean
+    volumeInGb: Int
+    volumeMountPath: String
+    config: JSON
+    category: String
+}
+
+input SaveTemplateInput {
+    advancedStart: Boolean
+    containerDiskInGb: Int
+    containerRegistryAuthId: String
+    dockerArgs: String
+    earned: Float
+    env: [EnvironmentVariable]
+    id: String
+    imageName: String
+    isPublic: Boolean
+    isRunpod: Boolean
+    isServerless: Boolean
+    boundEndpointId: String
+    name: String
+    ports: String
+    readme: String
+    runtimeInMin: Int
+    startJupyter: Boolean
+    startScript: String
+    startSsh: Boolean
+    volumeInGb: Int
+    volumeMountPath: String
+    config: JSON
+    category: String
 }
 
 input PodTerminateInput {
-  podId: String!
+    podId: String!
 }
 
 enum PodType {
-  INTERRUPTABLE
-  RESERVED
-  BID
-  BACKGROUND
+    INTERRUPTABLE
+    RESERVED
+    BID
+    BACKGROUND
 }
 
 scalar Port
 
 input SaveRegistryAuthInput {
-  name: String!
-  username: String!
-  password: String!
+    name: String!
+    username: String!
+    password: String!
 }
 
 type SavingsPlan {
-  endTime: DateTime
-  startTime: DateTime
-  gpuType: GpuType
-  podId: String
-  gpuTypeId: String
-  pod: Pod
-  savingsPlanType: String
-  costPerHr: Float
-  upfrontCost: Float
-  planLength: String
+    endTime: DateTime
+    startTime: DateTime
+    gpuType: GpuType
+    podId: String
+    gpuTypeId: String
+    pod: Pod
+    savingsPlanType: String
+    costPerHr: Float
+    upfrontCost: Float
+    planLength: String
 }
 
 input SavingsPlanInput {
-  planLength: String
-  upfrontCost: Float
+    planLength: String
+    upfrontCost: Float
 }
 
 enum Scope {
-  CSR_ADMIN
-  CSR_IMPERSONATION
-  CSR_READ
-  CSR_WRITE
-  TEAM_ADMIN
-  TEAM_DEV
-  TEAM_BILLING
-  TEAM_BASIC
-  HOST
+    CSR_ADMIN
+    CSR_IMPERSONATION
+    CSR_READ
+    CSR_WRITE
+    TEAM_ADMIN
+    TEAM_DEV
+    TEAM_BILLING
+    TEAM_BASIC
+    HOST
 }
 
 type Secret {
-  id: ID!
-  name: String!
-  createdAt: DateTime!
-  updatedAt: DateTime
-  description: String
-  lastRetrievedAt: DateTime
-  lastUpdatedAt: DateTime
+    id: ID!
+    name: String!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    description: String
+    lastRetrievedAt: DateTime
+    lastUpdatedAt: DateTime
 }
 
 type Specifics {
-  stockStatus: String
-  securePrice: Float
-  slsPrice: Float
+    stockStatus: String
+    securePrice: Float
+    slsPrice: Float
 }
 
 input SpecificsInput {
-  instanceId: String
-  dataCenterId: String
+    instanceId: String
+    dataCenterId: String
 }
 
 type SpendDetails {
-  localStoragePerHour: Float
-  networkStoragePerHour: Float
-  gpuComputePerHour: Float
+    localStoragePerHour: Float
+    networkStoragePerHour: Float
+    gpuComputePerHour: Float
 }
 
 type StripeReloadTransaction {
-  id: String
-  mediumId: String
-  transactionCompletedAt: DateTime
-  receiptLink: String
-  amount: Float
-  medium: TransactionMedium
-  type: TransactionType
+    id: String
+    mediumId: String
+    transactionCompletedAt: DateTime
+    receiptLink: String
+    amount: Float
+    medium: TransactionMedium
+    type: TransactionType
 }
 
 type Team {
-  id: String
-  name: String
-  owner: User!
-  memberships: [TeamMembership!]
-  membership: TeamMembership
-  members: [TeamMembership!]
-  invites: [TeamInvite]
-  isOwner: Boolean
-  availableRoles: [String]
+    id: String
+    name: String
+    owner: User!
+    memberships: [TeamMembership!]
+    membership: TeamMembership
+    members: [TeamMembership!]
+    invites: [TeamInvite]
+    isOwner: Boolean
+    availableRoles: [String]
 }
 
 type TeamInvite {
-  id: ID!
-  team: TeamInviteTeam!
-  role: TeamRole!
-  createdAt: DateTime!
-  expiresAt: DateTime!
+    id: ID!
+    team: TeamInviteTeam!
+    role: TeamRole!
+    createdAt: DateTime!
+    expiresAt: DateTime!
 }
 
 type TeamInviteOwner {
-  email: String
+    email: String
 }
 
 type TeamInviteTeam {
-  id: ID!
-  name: String
-  owner: TeamInviteOwner
+    id: ID!
+    name: String
+    owner: TeamInviteOwner
 }
 
 type TeamMembership {
-  id: ID!
-  member: User!
-  team: Team!
-  scopes: JSON
-  createdAt: DateTime!
-  updatedAt: DateTime!
+    id: ID!
+    member: User!
+    team: Team!
+    scopes: JSON
+    createdAt: DateTime!
+    updatedAt: DateTime!
 }
 
 enum TeamRole {
-  owner
-  admin
-  member
-  dev
-  billing
-  basic
+    owner
+    admin
+    member
+    dev
+    billing
+    basic
 }
 
 type TeamScopes {
-  role: String
+    role: String
 }
 
 enum TransactionMedium {
-  STRIPE
-  CRYPTO
-  RUNPOD
-  COINBASE
-  WIRE
-  REFERRAL
+    STRIPE
+    CRYPTO
+    RUNPOD
+    COINBASE
+    WIRE
+    REFERRAL
 }
 
 enum TransactionType {
-  RELOAD
-  CREDIT
-  DEBIT
-  PAYOUT
+    RELOAD
+    CREDIT
+    DEBIT
+    PAYOUT
 }
 
 type User {
-  pods: [Pod!]!
-  machines(input: UserMachinesFilter): [Machine]
-  machinesSummary: [MachineSummary]
-  id: String
-  authId: String
-  email: String
-  containerRegistryCreds: [ContainerRegistryAuth]
-  currentSpendPerHr: Float
-  machineQuota: Int
-  referralEarned: Float
-  signedTermsOfService: Boolean
-  spendLimit: Int
-  stripeSavedPaymentId: String
-  stripeSavedPaymentLast4: String
-  templateEarned: Float
-  multiFactorEnabled: Boolean
-  machineEarnings: [MachineEarning]
-  machineEarningsCustomRange(input: EarningsCustomRangeInput): [MachineEarning]
-  networkStorageEarnings(input: NetworkStorageEarningInput): [NetworkStorageEarning]
-  underBalance: Boolean
-  minBalance: Float
-  stripeAutoReloadAmount: Int
-  stripeAutoPaymentThreshold: Int
-  spendDetails: SpendDetails
-  maxServerlessConcurrency: Int
-  clientLifetimeSpend: Float
-  referralId: String
-  datacenters: [DataCenter]
-  clientBalance: Float
-  hostBalance: Float
-  hostStripeLinked: Boolean
-  stripeAccountId: String
-  stripeReloadHistory: [StripeReloadTransaction]
-  dailyCharges: [ClientCreditCharge]!
-  referral: UserReferral!
-  pubKey: String
-  information: UserInformation
-  notifyPodsStale: Boolean
-  notifyPodsGeneral: Boolean
-  notifyLowBalance: Boolean
-  creditAlertThreshold: Float
-  notifyOther: Boolean
-  podTemplates: [PodTemplate]
-  creditCodes: [CreditCode]
-  endpoint(id: String!): Endpoint
-  endpoints: [Endpoint]!
-  networkVolumes: [NetworkVolume]
-  teams: [Team]
-  ownedTeams: [Team]
-  team: Team
-  teamMembership: TeamMembership
-  teamScopes: TeamScopes
-  isTeam: Boolean
-  savingsPlans: [SavingsPlan]
-  serverlessDiscount: Discount
-  billing(input: UserBillingInput!): UserBilling
-  csrRole: CsrRole
-  secrets: [Secret!]!
-  impersonations: [Impersonation]
-  activeImpersonation: Impersonation
-  apiKeys: [ApiKey!]
+    pods: [Pod!]!
+    machines(input: UserMachinesFilter): [Machine]
+    machinesSummary: [MachineSummary]
+    id: String
+    authId: String
+    email: String
+    containerRegistryCreds: [ContainerRegistryAuth]
+    currentSpendPerHr: Float
+    machineQuota: Int
+    referralEarned: Float
+    signedTermsOfService: Boolean
+    spendLimit: Int
+    stripeSavedPaymentId: String
+    stripeSavedPaymentLast4: String
+    templateEarned: Float
+    multiFactorEnabled: Boolean
+    machineEarnings: [MachineEarning]
+    machineEarningsCustomRange(
+        input: EarningsCustomRangeInput
+    ): [MachineEarning]
+    networkStorageEarnings(
+        input: NetworkStorageEarningInput
+    ): [NetworkStorageEarning]
+    underBalance: Boolean
+    minBalance: Float
+    stripeAutoReloadAmount: Int
+    stripeAutoPaymentThreshold: Int
+    spendDetails: SpendDetails
+    maxServerlessConcurrency: Int
+    clientLifetimeSpend: Float
+    referralId: String
+    datacenters: [DataCenter]
+    clientBalance: Float
+    hostBalance: Float
+    hostStripeLinked: Boolean
+    stripeAccountId: String
+    stripeReloadHistory: [StripeReloadTransaction]
+    dailyCharges: [ClientCreditCharge]!
+    referral: UserReferral!
+    pubKey: String
+    information: UserInformation
+    notifyPodsStale: Boolean
+    notifyPodsGeneral: Boolean
+    notifyLowBalance: Boolean
+    creditAlertThreshold: Float
+    notifyOther: Boolean
+    podTemplates: [PodTemplate]
+    creditCodes: [CreditCode]
+    endpoint(id: String!): Endpoint
+    endpoints: [Endpoint]!
+    networkVolumes: [NetworkVolume]
+    teams: [Team]
+    ownedTeams: [Team]
+    team: Team
+    teamMembership: TeamMembership
+    teamScopes: TeamScopes
+    isTeam: Boolean
+    savingsPlans: [SavingsPlan]
+    serverlessDiscount: Discount
+    billing(input: UserBillingInput!): UserBilling
+    csrRole: CsrRole
+    secrets: [Secret!]!
+    impersonations: [Impersonation]
+    activeImpersonation: Impersonation
+    apiKeys: [ApiKey!]
 }
 
 type UserBilling {
-  gpuCloud: [UserGpuCloudBilling]
-  cpuCloud: [UserCpuCloudBilling]
-  serverless(input: UserServerlessBillingInput): [UserServerlessBilling]
-  runpodEndpoint: [UserRunpodEndpointBilling]
-  storage: [UserStorageBilling]
-  summary: [UserSummaryBilling]
+    gpuCloud: [UserGpuCloudBilling]
+    cpuCloud: [UserCpuCloudBilling]
+    serverless(input: UserServerlessBillingInput): [UserServerlessBilling]
+    runpodEndpoint: [UserRunpodEndpointBilling]
+    storage: [UserStorageBilling]
+    summary: [UserSummaryBilling]
 }
 
 input UserBillingInput {
-  granularity: BillingGranularity
+    granularity: BillingGranularity
 }
 
 type UserCpuCloudBilling {
-  cpuFlavorId: String
-  time: DateTime
-  timeBilledSeconds: Int
-  amount: Float
+    cpuFlavorId: String
+    time: DateTime
+    timeBilledSeconds: Int
+    amount: Float
 }
 
 type UserGpuCloudBilling {
-  gpuTypeId: String
-  time: DateTime
-  timeBilledSeconds: Int
-  amount: Float
+    gpuTypeId: String
+    time: DateTime
+    timeBilledSeconds: Int
+    amount: Float
 }
 
 type UserInformation {
-  firstName: String
-  lastName: String
-  addressLine1: String
-  addressLine2: String
-  countryCode: String
-  companyName: String
-  companyIdentification: String
-  taxIdentification: String
+    firstName: String
+    lastName: String
+    addressLine1: String
+    addressLine2: String
+    countryCode: String
+    companyName: String
+    companyIdentification: String
+    taxIdentification: String
 }
 
 input UserMachinesFilter {
-  start: Int
-  end: Int
+    start: Int
+    end: Int
 }
 
 type UserReferral {
-  code: String!
-  currentMonth: UserReferralMonth
+    code: String!
+    currentMonth: UserReferralMonth
 }
 
 type UserReferralMonth {
-  totalReferrals: Int
-  totalSpend: Int
+    totalReferrals: Int
+    totalSpend: Int
 }
 
 type UserRunpodEndpointBilling {
-  time: DateTime
-  amount: Float
+    time: DateTime
+    amount: Float
 }
 
 type UserServerlessBilling {
-  time: DateTime
-  amount: Float
-  timeBilledSeconds: Int
-  endpointId: String
-  gpuTypeId: String
-  instanceId: String
+    time: DateTime
+    amount: Float
+    timeBilledSeconds: Int
+    endpointId: String
+    gpuTypeId: String
+    instanceId: String
 }
 
 enum UserServerlessBillingGroupBy {
-  GPU_TYPE
-  ENDPOINT
-  INSTANCE_ID
+    GPU_TYPE
+    ENDPOINT
+    INSTANCE_ID
 }
 
 input UserServerlessBillingInput {
-  groupBy: UserServerlessBillingGroupBy
+    groupBy: UserServerlessBillingGroupBy
 }
 
 type UserStorageBilling {
-  time: DateTime
-  amount: Float
-  diskSpaceBilledGB: Int
-  networkStorageDiskSpaceBilledGB: Int
-  networkStorageAmount: Float
-  gpuDiskSpaceBilledGB: Int
-  gpuStorageAmount: Float
-  cpuDiskSpaceBilledGB: Int
-  cpuStorageAmount: Float
-  slsDiskSpaceBilledGB: Int
-  slsStorageAmount: Float
+    time: DateTime
+    amount: Float
+    diskSpaceBilledGB: Int
+    networkStorageDiskSpaceBilledGB: Int
+    networkStorageAmount: Float
+    gpuDiskSpaceBilledGB: Int
+    gpuStorageAmount: Float
+    cpuDiskSpaceBilledGB: Int
+    cpuStorageAmount: Float
+    slsDiskSpaceBilledGB: Int
+    slsStorageAmount: Float
 }
 
 type UserSummaryBilling {
-  time: DateTime
-  gpuCloudAmount: Float
-  cpuCloudAmount: Float
-  serverlessAmount: Float
-  storageAmount: Float
-  runpodEndpointAmount: Float
+    time: DateTime
+    gpuCloudAmount: Float
+    cpuCloudAmount: Float
+    serverlessAmount: Float
+    storageAmount: Float
+    runpodEndpointAmount: Float
 }
 
 scalar Void
 
 type WebhookRequestStatus {
-  time: DateTime
-  responses: [Int]
+    time: DateTime
+    responses: [Int]
 }
 
 input WebhookRequestsInput {
-  granularity: EndpointStatisticGranularity
+    granularity: EndpointStatisticGranularity
 }
 
 type WorkerState {
-  time: DateTime
-  initialized: Int
-  ready: Int
-  running: Int
-  throttled: Int
+    time: DateTime
+    initialized: Int
+    ready: Int
+    running: Int
+    throttled: Int
 }
 
 input WorkerStateInput {
-  granularity: EndpointStatisticGranularity
+    granularity: EndpointStatisticGranularity
 }
 
 input backgroundPodTelemetryInput {
-  machineId: String
-  gpuIndex: Int
+    machineId: String
+    gpuIndex: Int
 }

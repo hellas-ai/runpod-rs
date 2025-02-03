@@ -1,29 +1,22 @@
 use clap::Parser;
-use runpod::config::Config;
 use runpod::RunpodClient;
 use std::error::Error;
 use tabled::Table;
 use tracing::error;
 
 mod opts;
-use opts::{Cli, Commands, GpuCommands, PodCommands};
+use opts::{Cli, Commands, GpuCommands, PodCommands, TemplateCommands};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     tracing_subscriber::fmt::init();
 
-    let cli = Cli::parse();
+    let opts = Cli::parse();
+    let client = RunpodClient::from_config()?;
 
-    // Get API key from CLI arg or environment variable
-    // let api_key = cli
-    //     .api_key
-    //     .expect("API key must be provided either via --api-key or RUNPOD_API_KEY env variable");
-    let config = Config::try_from_env().expect("Failed to load config");
-    let client = RunpodClient::new(config);
-
-    match cli.command {
+    match opts.command {
         Commands::Pod { command } => match command {
-            PodCommands::List { verbose } => match client.list_pods().await {
+            PodCommands::List {} => match client.list_pods().await {
                 Ok(pods) => {
                     println!("{}", Table::new(pods).to_string());
                 }
@@ -70,13 +63,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 spot,
                 bid,
                 disk,
+                template,
             } => {
                 if spot && bid.is_none() {
                     error!("Must specify --bid when using --spot");
                     std::process::exit(1);
                 }
 
-                match client.spawn_pod(name, gpu, count, spot, bid, disk).await {
+                match client
+                    .spawn_pod(name, gpu, count, spot, bid, disk, template)
+                    .await
+                {
                     Ok(pod) => {
                         println!("Successfully spawned pod:");
                         println!("{}", Table::new(vec![pod]).to_string());
@@ -109,6 +106,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     std::process::exit(1);
                 }
             },
+        },
+        Commands::Template { command } => match command {
+            TemplateCommands::List {} => {
+                let templates = client.get_templates().await?;
+                let table = Table::new(templates);
+                println!("{table}");
+            }
+            _ => unimplemented!(),
         },
     }
 

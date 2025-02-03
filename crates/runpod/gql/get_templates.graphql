@@ -1,0 +1,60 @@
+# #[derive(Debug, Clone)]
+# #[serde(rename_all = "camelCase")]
+# pub struct Template {
+#     advanced_start: bool,
+#     container_disk_in_gb: i64,
+#     container_registry_auth_id: Option<String>,
+#     docker_args: Option<String>,
+#     earned: f64,
+#     // env: Option<Vec<EnvironmentVariable>>,
+#     id: Option<String>,
+#     image_name: String,
+#     is_public: bool,
+#     is_runpod: bool,
+#     is_serverless: bool,
+#     bound_endpoint_id: Option<String>,
+#     name: String,
+#     ports: Option<String>,
+#     readme: Option<String>,
+#     runtime_in_min: i64,
+#     start_jupyter: bool,
+#     start_script: Option<String>,
+# start_ssh: bool,
+#     volume_in_gb: f64,
+#     volume_mount_path: Option<String>,
+#     config: serde_json::Value,
+#     category: String,
+# }
+
+query GetTemplates {
+    myself {
+        podTemplates {
+            advancedStart
+            containerDiskInGb
+            containerRegistryAuthId
+            dockerArgs
+            earned
+            env {
+                key
+                value
+            }
+            id
+            imageName
+            isPublic
+            isRunpod
+            isServerless
+            boundEndpointId
+            name
+            ports
+            readme
+            runtimeInMin
+            startJupyter
+            startScript
+            startSsh
+            volumeInGb
+            volumeMountPath
+            config
+            category
+        }
+    }
+}

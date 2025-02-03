@@ -14,4 +14,4 @@ tracing = "0.1"
 tracing-subscriber = "0.3"
 
 # tabled = { version = "0.17" }
-tabled = { path = "../tabled/tabled" }
+tabled = { git = "https://github.com/zhiburt/tabled" }

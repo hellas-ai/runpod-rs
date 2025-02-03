@@ -2,6 +2,7 @@ use graphql_client::GraphQLQuery;
 
 pub type DateTime = String;
 pub type Port = u16;
+pub type JSON = serde_json::Value;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -64,4 +65,40 @@ pub struct SpawnPodOnDemand;
     response_derives = "Debug, Clone",
     variables_derives = "Debug, Default"
 )]
-pub struct SpawnPodSpot;
+pub struct BidSpot;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "gql/schema.graphql",
+    query_path = "gql/get_templates.graphql",
+    response_derives = "Debug, Clone",
+    variables_derives = "Debug, Clone"
+)]
+pub struct GetTemplates;
+
+// #[derive(GraphQLQuery)]
+// #[graphql(
+//     schema_path = "gql/schema.graphql",
+//     query_path = "gql/get_template.graphql",
+//     response_derives = "Debug, Clone",
+//     variables_derives = "Debug, Clone"
+// )]
+// pub struct GetTemplate;
+
+// #[derive(GraphQLQuery)]
+// #[graphql(
+//     schema_path = "gql/schema.graphql",
+//     query_path = "gql/save_template.graphql",
+//     response_derives = "Debug, Clone",
+//     variables_derives = "Debug, Clone"
+// )]
+// pub struct SaveTemplate;
+
+// #[derive(GraphQLQuery)]
+// #[graphql(
+//     schema_path = "gql/schema.graphql",
+//     query_path = "gql/remove_template.graphql",
+//     response_derives = "Debug, Clone",
+//     variables_derives = "Debug, Clone"
+// )]
+// pub struct RemoveTemplate;

@@ -1,16 +1,15 @@
 use crate::config::Config;
+use crate::gql::bid_spot::CloudTypeEnum;
 use crate::gql::gpu_types::{GpuLowestPriceInput, GpuTypeFilter};
-use crate::{
-    error::{Result, RunpodError},
-    gql::*,
-    types::*,
-};
+use crate::RunpodError;
+use crate::{error::Result, gql::*, types::*};
 use graphql_client::GraphQLQuery;
 use graphql_client::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use reqwest::{Client as ReqwestClient, Url};
 use serde::{de::DeserializeOwned, Serialize};
-use tracing::{debug, error};
+use std::sync::Arc;
+use tracing::{debug, error, info};
 
 #[derive(Clone)]
 pub struct RunpodClient {
@@ -72,17 +71,31 @@ impl RunpodClient {
         let response = request.send().await?;
         let status = response.status();
         let body = response.bytes().await?;
+        debug!("Response body: {}", String::from_utf8_lossy(&body));
 
+        // First check if it's a non-200 status code
         if !status.is_success() {
             error!("Request failed: {}", status);
+            // Try to parse error message from body if possible
+            if let Ok(error_json) = serde_json::from_slice::<serde_json::Value>(&body) {
+                if let Some(message) = error_json.get("error").and_then(|e| e.as_str()) {
+                    return Err(match status.as_u16() {
+                        401 => RunpodError::AuthenticationFailed(message.into()),
+                        404 => RunpodError::NotFound(message.into()),
+                        429 => RunpodError::RateLimited,
+                        _ => RunpodError::ServerError(message.into()),
+                    });
+                }
+            }
             return Err(match status.as_u16() {
                 401 => RunpodError::AuthenticationFailed("Invalid API key".into()),
                 404 => RunpodError::NotFound("Resource not found".into()),
                 429 => RunpodError::RateLimited,
-                _ => {
-                    error!(body = ?body, "Server returned {}", status);
-                    RunpodError::ServerError(format!("Server returned {}", status))
-                }
+                _ => RunpodError::ServerError(format!(
+                    "Server returned {} - {}",
+                    status,
+                    String::from_utf8_lossy(&body)
+                )),
             });
         }
 
@@ -90,7 +103,7 @@ impl RunpodClient {
         let response: Response<Res> = match serde_path_to_error::deserialize(jd) {
             Ok(response) => response,
             Err(err) => {
-                let json_str: std::borrow::Cow<'_, str> = String::from_utf8_lossy(&body);
+                let json_str = String::from_utf8_lossy(&body);
                 error!(
                     "Failed to deserialize response at path {}: {}. Raw response: {}",
                     err.path(),
@@ -103,18 +116,28 @@ impl RunpodClient {
 
         match response {
             Response {
-                data: Some(res), ..
+                data: Some(res),
+                errors: None,
+                ..
             } => Ok(res),
             Response {
                 errors: Some(errors),
                 ..
             } => {
                 error!("GraphQL errors: {:#?}", errors);
-                Err(errors.into_iter().next().unwrap().into())
+                Err(RunpodError::GraphQLError(
+                    errors
+                        .into_iter()
+                        .next()
+                        .map_or_else(|| "Unknown GraphQL error".to_string(), |e| e.message),
+                ))
             }
             _ => {
-                error!("Response is missing data");
-                Err(RunpodError::ServerError("Response is missing data".into()))
+                error!("Response is missing both data and errors");
+                Err(RunpodError::ServerError(format!(
+                    "Invalid response format: {}",
+                    String::from_utf8_lossy(&body)
+                )))
             }
         }
     }
@@ -235,20 +258,30 @@ impl RunpodClient {
         spot: bool,
         bid_per_gpu: Option<f64>,
         container_disk_in_gb: Option<i64>,
+        template: String,
     ) -> Result<String> {
         if spot {
-            let variables = spawn_pod_spot::Variables {
-                input: spawn_pod_spot::PodRentInterruptableInput {
+            let variables = bid_spot::Variables {
+                input: bid_spot::PodRentInterruptableInput {
                     name: Some(name),
                     gpu_type_id: Some(gpu_type_id),
                     gpu_count: Some(gpu_count),
                     bid_per_gpu,
+                    template_id: template,
                     container_disk_in_gb,
+                    start_ssh: Some(true),
+                    volume_in_gb: Some(60),
+                    cloud_type: Some(CloudTypeEnum::ALL),
+                    min_download: Some(0),
+                    min_upload: Some(0),
+                    min_memory_in_gb: Some(8),
+                    min_vcpu_count: Some(2),
+                    support_public_ip: Some(false),
                     ..Default::default()
                 },
             };
-            let request_body = SpawnPodSpot::build_query(variables);
-            let response: spawn_pod_spot::ResponseData = self.request(&request_body).await?;
+            let request_body = BidSpot::build_query(variables);
+            let response: bid_spot::ResponseData = self.request(&request_body).await?;
             let id = response
                 .pod_rent_interruptable
                 .ok_or(RunpodError::GraphQLError("Pod not created".to_string()))?
@@ -266,6 +299,7 @@ impl RunpodClient {
             };
             let request_body = SpawnPodOnDemand::build_query(variables);
             let response: spawn_pod_on_demand::ResponseData = self.request(&request_body).await?;
+            info!("response: {:?}", response);
             let id = response
                 .pod_find_and_deploy_on_demand
                 .ok_or(RunpodError::GraphQLError("Pod not created".to_string()))?
@@ -273,6 +307,50 @@ impl RunpodClient {
             Ok(id)
         }
     }
+
+    /// Get all templates for the current user
+    pub async fn get_templates(&self) -> Result<Vec<Template>> {
+        let variables = get_templates::Variables {};
+        let request_body = GetTemplates::build_query(variables);
+        let response: get_templates::ResponseData = self.request(&request_body).await?;
+        let templates = response
+            .myself
+            .pod_templates
+            .ok_or(RunpodError::GraphQLError("No templates found".to_string()))?
+            .into_iter()
+            .flatten()
+            .map(Into::into)
+            .collect();
+        Ok(templates)
+    }
+
+    //./ Get a specific template by ID
+    // pub async fn get_template(&self, id: String) -> Result<Template> {
+    //     let variables = get_template::Variables { id };
+    //     let request_body = GetTemplate::build_query(variables);
+    //     let response: get_template::ResponseData = self.request(&request_body).await?;
+    //     Ok(response.myself.template.into())
+    // }
+
+    //// Save or update a template
+    // pub async fn save_template(&self, input: PodTemplateInput) -> Result<Template> {
+    //     let variables = save_template::Variables {
+    //         input: save_template::PodTemplateInput {},
+    //     };
+    //     let request_body = SaveTemplate::build_query(variables);
+    //     let response: save_template::ResponseData = self.request(&request_body).await?;
+    //     Ok(response.save_template.into())
+    // }
+
+    // /// Remove a template by ID
+    // pub async fn remove_template(&self, id: String) -> Result<()> {
+    //     let variables = remove_template::Variables {
+    //         input: remove_template::RemoveTemplateInput { id },
+    //     };
+    //     let request_body = RemoveTemplate::build_query(variables);
+    //     let _: remove_template::ResponseData = self.request(&request_body).await?;
+    //     Ok(())
+    // }
 }
 
 fn min_option<T: PartialOrd>(a: Option<T>, b: Option<T>) -> Option<T> {

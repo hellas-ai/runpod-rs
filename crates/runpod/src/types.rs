@@ -5,7 +5,7 @@ use tracing::error;
 #[cfg_attr(
     feature = "tabled",
     derive(tabled::Tabled),
-    tabled(display_option_with = "display_option_with")
+    tabled(display(Option, "display_option", ""))
 )]
 #[derive(Debug, Clone)]
 pub struct Pod {
@@ -65,7 +65,6 @@ impl From<myself_query::PodType> for PodType {
             myself_query::PodType::RESERVED => PodType::Reserved,
             myself_query::PodType::BID => PodType::Bid,
             myself_query::PodType::BACKGROUND => PodType::Background,
-            // This should never happen as we've covered all variants
             _ => {
                 error! {"Unknown pod type: {:?}", pod_type};
                 PodType::Background
@@ -81,7 +80,6 @@ impl From<get_pod::PodType> for PodType {
             get_pod::PodType::RESERVED => PodType::Reserved,
             get_pod::PodType::BID => PodType::Bid,
             get_pod::PodType::BACKGROUND => PodType::Background,
-            // This should never happen as we've covered all variants
             _ => {
                 error! {"Unknown pod type: {:?}", pod_type};
                 PodType::Background
@@ -318,10 +316,20 @@ impl From<gpu_types::Compliance> for Compliance {
     }
 }
 
+fn display_option<T>(opt: &Option<T>, default: &str) -> String
+where
+    T: ToString,
+{
+    match opt {
+        Some(val) => val.to_string(),
+        None => default.to_string(),
+    }
+}
+
 #[cfg_attr(
     feature = "tabled",
     derive(tabled::Tabled),
-    tabled(display_option_with = "display_option_with")
+    tabled(display(Option, "display_option", ""))
 )]
 #[derive(Debug, Clone)]
 pub struct GpuOffer {
@@ -353,17 +361,10 @@ pub struct GpuOffer {
     pub lowest_price: Option<LowestPrice>,
 }
 
-fn display_option_with(opt: &Option<impl Display>) -> String {
-    match opt {
-        Some(val) => val.to_string(),
-        None => "".to_string(),
-    }
-}
-
 #[cfg_attr(
     feature = "tabled",
     derive(tabled::Tabled),
-    tabled(display_option_with = "display_option_with")
+    tabled(display(Option, "display_option", ""))
 )]
 #[derive(Debug, Clone)]
 pub struct LowestPrice {
@@ -434,6 +435,125 @@ impl From<gpu_types::GpuTypesGpuTypesLowestPrice> for LowestPrice {
             compliance: price
                 .compliance
                 .map(|v| v.into_iter().filter_map(|c| c.map(Into::into)).collect()),
+        }
+    }
+}
+
+// #[derive(Debug, Clone)]
+// pub struct EnvironmentVariable {
+//     pub key: String,
+//     pub value: String,
+// }
+
+// impl From<get_templates::GetTemplatesMyselfTemplatesEnv> for EnvironmentVariable {
+//     fn from(env: get_templates::GetTemplatesMyselfTemplatesEnv) -> Self {
+//         Self {
+//             key: env.key,
+//             value: env.value,
+//         }
+//     }
+// }
+
+// impl From<get_template::GetTemplateMyselfTemplateEnv> for EnvironmentVariable {
+//     fn from(env: get_template::GetTemplateMyselfTemplateEnv) -> Self {
+//         Self {
+//             key: env.key,
+//             value: env.value,
+//         }
+//     }
+// }
+
+// impl From<save_template::SaveTemplateSaveTemplateEnv> for EnvironmentVariable {
+//     fn from(env: save_template::SaveTemplateSaveTemplateEnv) -> Self {
+//         Self {
+//             key: env.key,
+//             value: env.value,
+//         }
+//     }
+// }
+
+// "advancedStart": false,
+// "containerDiskInGb": 987,
+// "containerRegistryAuthId": "abc123",
+// "dockerArgs": "abc123",
+// "earned": 123.45,
+// "env": [EnvironmentVariable],
+// "id": "abc123",
+// "imageName": "xyz789",
+// "isPublic": true,
+// "isRunpod": false,
+// "isServerless": true,
+// "boundEndpointId": "xyz789",
+// "name": "xyz789",
+// "ports": "xyz789",
+// "readme": "abc123",
+// "runtimeInMin": 123,
+// "startJupyter": false,
+// "startScript": "xyz789",
+// "startSsh": false,
+// "volumeInGb": 123,
+// "volumeMountPath": "abc123",
+// "config": {},
+// "category": "abc123"
+
+#[cfg_attr(
+    feature = "tabled",
+    derive(tabled::Tabled),
+    tabled(display(Option, "display_option", ""))
+)]
+#[derive(Debug, Clone)]
+pub struct Template {
+    // advanced_start: Option<bool>,
+    // container_disk_in_gb: i64,
+    // container_registry_auth_id: Option<String>,
+    // docker_args: Option<String>,
+    // earned: f64,
+    // env: Option<Vec<EnvironmentVariable>>,
+    id: Option<String>,
+    image_name: Option<String>,
+    // is_public: bool,
+    // is_runpod: bool,
+    // is_serverless: bool,
+    // bound_endpoint_id: Option<String>,
+    // name: String,
+    // ports: Option<String>,
+    // readme: Option<String>,
+    // runtime_in_min: i64,
+    // start_jupyter: bool,
+    // start_script: Option<String>,
+    start_ssh: Option<bool>,
+    // volume_in_gb: f64,
+    // volume_mount_path: Option<String>,
+    // config: serde_json::Value,
+    // category: String,
+}
+
+impl From<get_templates::GetTemplatesMyselfPodTemplates> for Template {
+    fn from(template: get_templates::GetTemplatesMyselfPodTemplates) -> Self {
+        Self {
+            // advanced_start: template.advanced_start,
+            // container_disk_in_gb: template.container_disk_in_gb,
+            // container_registry_auth_id: template.container_registry_auth_id,
+            // docker_args: template.docker_args,
+            // earned: template.earned,
+            // // env: template.env.map(|v| v.into_iter().map(Into::into).collect()),
+            id: template.id,
+            image_name: template.image_name,
+            // is_public: template.is_public,
+            // is_runpod: template.is_runpod,
+            // is_serverless: template.is_serverless,
+            // bound_endpoint_id: template.bound_endpoint_id,
+            // name: template.name,
+            // ports: template.ports,
+            // readme: template.readme,
+            // runtime_in_min: template.runtime_in_min,
+            // start_jupyter: template.start_jupyter,
+            // start_script: template.start_script,
+            start_ssh: template.start_ssh,
+            // volume_in_gb: template.volume_in_gb,
+            // volume_mount_path: template.volume_mount_path,
+            // config: template.config,
+            // category: template.category,
         }
     }
 }
