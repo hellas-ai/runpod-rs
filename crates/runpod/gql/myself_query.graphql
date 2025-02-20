@@ -13,6 +13,8 @@ query MyselfQuery {
       containerDiskInGb
       lowestBidPriceToResume
       adjustedCostPerHr
+      dockerArgs
+      env
       runtime {
         uptimeInSeconds
       }

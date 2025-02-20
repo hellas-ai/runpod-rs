@@ -21,6 +21,11 @@ pub struct Pod {
     pub container_disk_in_gb: i64,
     pub adjusted_cost_per_hr: f64,
     pub lowest_bid_price_to_resume: Option<f64>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
+    pub docker_args: Option<String>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
+    pub env: Vec<String>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub runtime: Option<PodRuntime>,
     #[cfg_attr(feature = "tabled", tabled(skip))]
     pub machine: PodMachineInfo,
@@ -105,6 +110,16 @@ impl From<myself_query::MyselfQueryMyselfPods> for Pod {
             lowest_bid_price_to_resume: pod.lowest_bid_price_to_resume,
             runtime: pod.runtime.map(Into::into),
             machine: pod.machine.into(),
+            docker_args: pod.docker_args,
+            env: pod
+                .env
+                .map(|env_vec| {
+                    env_vec
+                        .into_iter()
+                        .filter_map(|opt_env| opt_env.map(Into::into))
+                        .collect()
+                })
+                .unwrap_or_default(),
         }
     }
 }
@@ -114,6 +129,7 @@ impl From<get_pod::GetPodPod> for Pod {
         Self {
             id: pod.id,
             name: pod.name,
+            docker_args: pod.docker_args,
             pod_type: pod.pod_type.map(Into::into),
             desired_status: pod.desired_status.into(),
             image_name: pod.image_name,
@@ -126,6 +142,10 @@ impl From<get_pod::GetPodPod> for Pod {
             lowest_bid_price_to_resume: pod.lowest_bid_price_to_resume,
             runtime: pod.runtime.map(Into::into),
             machine: pod.machine.into(),
+            env: pod
+                .env
+                .map(|env_vec| env_vec.into_iter().filter_map(|opt_env| opt_env).collect())
+                .unwrap_or_default(),
         }
     }
 }
@@ -339,7 +359,9 @@ pub struct GpuOffer {
     #[cfg_attr(feature = "tabled", tabled(skip))]
     pub manufacturer: Option<String>,
     pub memory_in_gb: Option<i64>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub secure_cloud: Option<bool>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub community_cloud: Option<bool>,
     pub secure_price: Option<f64>,
     pub community_price: Option<f64>,
@@ -353,9 +375,11 @@ pub struct GpuOffer {
     pub one_week_price: Option<f64>,
     pub community_spot_price: Option<f64>,
     pub secure_spot_price: Option<f64>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub max_gpu_count: Option<i64>,
     pub max_gpu_count_community_cloud: Option<i64>,
     pub max_gpu_count_secure_cloud: Option<i64>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub min_pod_gpu_count: Option<i64>,
     #[cfg_attr(feature = "tabled", tabled(skip))]
     pub lowest_price: Option<LowestPrice>,
@@ -370,10 +394,15 @@ pub struct GpuOffer {
 pub struct LowestPrice {
     // pub valid: Option<bool>,
     pub gpu_name: Option<String>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub gpu_type_id: Option<String>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub minimum_bid_price: Option<f64>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub uninterruptable_price: Option<f64>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub min_memory: Option<i64>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub min_vcpu: Option<i64>,
     pub rental_percentage: Option<f64>,
     pub rented_count: Option<i64>,
@@ -383,6 +412,7 @@ pub struct LowestPrice {
     pub min_disk: Option<i64>,
     pub min_upload: Option<i64>,
     pub country_code: Option<String>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
     pub support_public_ip: Option<bool>,
     #[cfg_attr(feature = "tabled", tabled(skip))]
     pub compliance: Option<Vec<Compliance>>,
@@ -439,20 +469,25 @@ impl From<gpu_types::GpuTypesGpuTypesLowestPrice> for LowestPrice {
     }
 }
 
-// #[derive(Debug, Clone)]
-// pub struct EnvironmentVariable {
-//     pub key: String,
-//     pub value: String,
-// }
+#[cfg_attr(
+    feature = "tabled",
+    derive(tabled::Tabled),
+    tabled(display(Option, "display_option", ""))
+)]
+#[derive(Debug, Clone)]
+pub struct EnvironmentVariable {
+    pub key: String,
+    pub value: String,
+}
 
-// impl From<get_templates::GetTemplatesMyselfTemplatesEnv> for EnvironmentVariable {
-//     fn from(env: get_templates::GetTemplatesMyselfTemplatesEnv) -> Self {
-//         Self {
-//             key: env.key,
-//             value: env.value,
-//         }
-//     }
-// }
+impl From<get_templates::GetTemplatesMyselfPodTemplatesEnv> for EnvironmentVariable {
+    fn from(env: get_templates::GetTemplatesMyselfPodTemplatesEnv) -> Self {
+        Self {
+            key: env.key.expect("env var without key"),
+            value: env.value.expect("env var without"),
+        }
+    }
+}
 
 // impl From<get_template::GetTemplateMyselfTemplateEnv> for EnvironmentVariable {
 //     fn from(env: get_template::GetTemplateMyselfTemplateEnv) -> Self {
@@ -496,19 +531,27 @@ impl From<gpu_types::GpuTypesGpuTypesLowestPrice> for LowestPrice {
 // "config": {},
 // "category": "abc123"
 
+fn display_environment_variable(a: ()) -> String {
+    "".to_string()
+}
+
 #[cfg_attr(
     feature = "tabled",
     derive(tabled::Tabled),
-    tabled(display(Option, "display_option", ""))
+    tabled(
+        display(Option, "display_option", ""),
+        // display(Option<Vec<EnvironmentVariable>>, "display_environment_variable"),
+    )
 )]
 #[derive(Debug, Clone)]
 pub struct Template {
     // advanced_start: Option<bool>,
     // container_disk_in_gb: i64,
     // container_registry_auth_id: Option<String>,
-    // docker_args: Option<String>,
+    docker_args: Option<String>,
     // earned: f64,
-    // env: Option<Vec<EnvironmentVariable>>,
+    #[cfg_attr(feature = "tabled", tabled(skip))]
+    env: Option<Vec<EnvironmentVariable>>,
     id: Option<String>,
     image_name: Option<String>,
     // is_public: bool,
@@ -534,7 +577,7 @@ impl From<get_templates::GetTemplatesMyselfPodTemplates> for Template {
             // advanced_start: template.advanced_start,
             // container_disk_in_gb: template.container_disk_in_gb,
             // container_registry_auth_id: template.container_registry_auth_id,
-            // docker_args: template.docker_args,
+            docker_args: template.docker_args,
             // earned: template.earned,
             // // env: template.env.map(|v| v.into_iter().map(Into::into).collect()),
             id: template.id,
@@ -554,6 +597,12 @@ impl From<get_templates::GetTemplatesMyselfPodTemplates> for Template {
             // volume_mount_path: template.volume_mount_path,
             // config: template.config,
             // category: template.category,
+            env: template.env.map(|env_vec| {
+                env_vec
+                    .into_iter()
+                    .filter_map(|opt_env| opt_env.map(Into::into))
+                    .collect()
+            }),
         }
     }
 }

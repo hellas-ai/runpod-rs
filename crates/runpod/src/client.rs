@@ -8,7 +8,6 @@ use graphql_client::Response;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use reqwest::{Client as ReqwestClient, Url};
 use serde::{de::DeserializeOwned, Serialize};
-use std::sync::Arc;
 use tracing::{debug, error, info};
 
 #[derive(Clone)]

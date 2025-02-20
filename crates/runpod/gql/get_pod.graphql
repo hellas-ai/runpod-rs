@@ -3,6 +3,8 @@ query GetPod($input: PodFilter!) {
     id
     name
     podType
+    dockerArgs
+    env
     desiredStatus
     imageName
     gpuCount

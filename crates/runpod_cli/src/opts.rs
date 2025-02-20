@@ -166,5 +166,9 @@ pub enum GpuCommands {
         /// Show only secure cloud GPUs
         #[arg(short, long)]
         secure: Option<bool>,
+
+        /// Minimum VRAM required in GB (can be satisfied by multiple GPUs)
+        #[arg(long)]
+        vram: Option<i64>,
     },
 }

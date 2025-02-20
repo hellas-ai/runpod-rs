@@ -89,16 +89,37 @@ async fn main() -> Result<(), Box<dyn Error>> {
             GpuCommands::List {
                 lowest_price,
                 secure,
+                vram,
             } => match client.list_gpus(secure).await {
-                Ok(gpus) => {
+                Ok(mut gpus) => {
+                    // Filter by VRAM if specified
+                    if let Some(min_vram) = vram {
+                        gpus = gpus
+                            .into_iter()
+                            .filter(|gpu| {
+                                let max_gpus = gpu.max_gpu_count.unwrap_or(1);
+                                let gpu_vram = gpu.memory_in_gb.unwrap_or(0);
+                                gpu_vram * max_gpus >= min_vram
+                            })
+                            .collect();
+                    }
+
                     if lowest_price {
-                        let gpus: Vec<_> = gpus
+                        let lowest_price_gpus: Vec<_> = gpus
                             .into_iter()
                             .filter_map(|gpu| gpu.lowest_price)
                             .collect();
-                        println!("{}", Table::new(gpus).to_string());
+                        if lowest_price_gpus.is_empty() {
+                            println!("No GPUs found matching the criteria");
+                        } else {
+                            println!("{}", Table::new(lowest_price_gpus).to_string());
+                        }
                     } else {
-                        println!("{}", Table::new(gpus).to_string());
+                        if gpus.is_empty() {
+                            println!("No GPUs found matching the criteria");
+                        } else {
+                            println!("{}", Table::new(gpus).to_string());
+                        }
                     }
                 }
                 Err(e) => {
